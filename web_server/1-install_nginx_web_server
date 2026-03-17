@@ -6,13 +6,5 @@ apt-get install -y nginx
 mkdir -p /var/www/html
 echo "Holberton School" > /var/www/html/index.html
 
-# Allow nginx through firewall
-ufw allow 'Nginx HTTP'
-
-# Start nginx
 service nginx start
-
-# Make sure nginx is listening on port 80
-sed -i 's/listen 80 default_server;/listen 80 default_server;/' /etc/nginx/sites-available/default
-
 service nginx restart
