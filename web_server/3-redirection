@@ -5,6 +5,24 @@ apt-get install -y nginx
 
 echo "Holberton School" | tee /var/www/html/index.html
 
-sed -i 's|try_files $uri $uri/ =404;|try_files $uri $uri/ =404;\n\t}\n\n\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;|' /etc/nginx/sites-available/default
+cat > /etc/nginx/sites-available/default << 'NGINX'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+}
+NGINX
 
 service nginx restart
