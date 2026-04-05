@@ -5,7 +5,7 @@ apt-get install -y nginx
 
 echo "Holberton School" | tee /var/www/html/index.html
 
-# Add custom header to nginx config
-sed -i '/server_name _;/a \\tadd_header X-Served-By $hostname;' /etc/nginx/sites-available/default
+HOSTNAME=$(hostname)
+sed -i "/server_name _;/a \\\tadd_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default
 
 service nginx restart
