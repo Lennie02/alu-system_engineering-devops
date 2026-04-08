@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # Configures Nginx to run as nginx user on port 8080
 
-# Change user in nginx.conf
+# Update user in nginx.conf
 sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
 
-# Change port to 8080
-sed -i 's/listen 80/listen 8080/g' /etc/nginx/sites-available/default
-sed -i 's/listen \[::\]:80/listen [::]:8080/g' /etc/nginx/sites-available/default
+# Update port in default config
+sed -i 's/listen 80 default_server/listen 8080 default_server/g' /etc/nginx/sites-enabled/default
+sed -i 's/listen \[::\]:80 default_server/listen [::]:8080 default_server/g' /etc/nginx/sites-enabled/default
 
-# Kill any running nginx
-kill "$(cat /var/run/nginx.pid)" 2>/dev/null || true
-pkill -f nginx 2>/dev/null || true
+# Stop nginx completely
+nginx -s stop 2>/dev/null || pkill -9 nginx 2>/dev/null || true
+sleep 2
+
+# Start nginx as nginx user
+sudo -u nginx nginx -g 'daemon off;' &
 sleep 1
-
-# Start nginx
-/usr/sbin/nginx
