@@ -4,14 +4,14 @@
 # Change user in nginx.conf
 sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
 
-# Change port in default site
+# Change port to 8080
 sed -i 's/listen 80/listen 8080/g' /etc/nginx/sites-available/default
 sed -i 's/listen \[::\]:80/listen [::]:8080/g' /etc/nginx/sites-available/default
 
-# Make sure sites-enabled has the default symlink
-ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-# Stop and start nginx
-nginx -s quit 2>/dev/null || true
+# Kill any running nginx
+kill "$(cat /var/run/nginx.pid)" 2>/dev/null || true
+pkill -f nginx 2>/dev/null || true
 sleep 1
-service nginx start
+
+# Start nginx
+/usr/sbin/nginx
