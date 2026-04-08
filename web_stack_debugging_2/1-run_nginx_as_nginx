@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 # Configures Nginx to run as nginx user on port 8080
-sed -i 's/^user www-data;/user nginx;/' /etc/nginx/nginx.conf
-sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
-sed -i 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/' /etc/nginx/sites-available/default
-pkill nginx
+
+# Change user in nginx.conf
+sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
+
+# Change port in default site
+sed -i 's/listen 80/listen 8080/g' /etc/nginx/sites-available/default
+sed -i 's/listen \[::\]:80/listen [::]:8080/g' /etc/nginx/sites-available/default
+
+# Make sure sites-enabled has the default symlink
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Stop and start nginx
+nginx -s quit 2>/dev/null || true
+sleep 1
 service nginx start
