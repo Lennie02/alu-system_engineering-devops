@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
 # Configures Nginx to run as nginx user on port 8080
 
-sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
-sed -i 's/listen 80/listen 8080/g' /etc/nginx/sites-available/default
-sed -i 's/listen \[::\]:80/listen [::]:8080/g' /etc/nginx/sites-available/default
-id -u nginx &>/dev/null || useradd --no-create-home nginx
+# Fix user in all nginx config files
+sed -i 's/^user www-data;/user nginx;/' /etc/nginx/nginx.conf
+sed -i 's/^user www-data;/user nginx;/' /etc/nginx/sites-available/default 2>/dev/null || true
+
+# Fix port in default site
+sed -i 's/listen 80 default_server;/listen 8080 default_server;/g' /etc/nginx/sites-available/default
+sed -i 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/g' /etc/nginx/sites-available/default
+
+# Fix port in nginx.conf too
+sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/nginx.conf
+
+# Ensure nginx user exists
+id -u nginx &>/dev/null || useradd --system --no-create-home --shell /bin/false nginx
+
+# Restart
 pkill -9 nginx 2>/dev/null || true
 sleep 1
-service nginx start
+nginx
